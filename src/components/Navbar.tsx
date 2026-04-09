@@ -1,0 +1,141 @@
+import { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { Menu, X, ChevronRight, BookOpen, FileText } from 'lucide-react';
+
+export const Navbar = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+
+  const navItems = [
+    { path: '/', label: 'Home' },
+    { path: '/about', label: 'About' },
+    { path: '/skills', label: 'Skills' },
+    { path: '/projects', label: 'Projects' },
+    { path: '/blog', label: 'Blog', icon: BookOpen },
+    { path: '/case-studies', label: 'Case Studies', icon: FileText },
+    { path: '/contact', label: 'Contact' },
+  ];
+
+  const isActive = (path: string) => location.pathname === path;
+
+  return (
+    <>
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-[#000000]/80 backdrop-blur-md border-b border-neutral-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            {/* Personalized Logo */}
+            <Link to="/" className="flex items-center space-x-2 group">
+              <div className="text-[#00FF41] font-mono font-bold text-xl tracking-wide">
+                <span className="text-[#FF4757]">&gt;</span>
+                <span className="group-hover:text-[#00CC33] transition-colors duration-200 ml-2">
+                  Akash_
+                </span>
+              </div>
+            </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-8">
+              {navItems.map((item) => {
+                const IconComponent = item.icon;
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className="relative px-3 py-2 text-sm font-medium transition-all duration-200 group flex items-center gap-2"
+                  >
+                    {IconComponent && (
+                      <IconComponent 
+                        size={16} 
+                        className={`${
+                          isActive(item.path)
+                            ? 'text-[#00FF41]'
+                            : 'text-neutral-400 group-hover:text-[#00FF41]'
+                        }`}
+                      />
+                    )}
+                    <span
+                      className={`font-mono ${
+                        isActive(item.path)
+                          ? 'text-[#00FF41]'
+                          : 'text-neutral-400 group-hover:text-[#00FF41]'
+                      }`}
+                    >
+                      {item.label}
+                    </span>
+                    {isActive(item.path) && (
+                      <motion.div
+                        layoutId="navbar-indicator"
+                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#00FF41]"
+                        initial={false}
+                        transition={{ duration: 0.2 }}
+                      />
+                    )}
+                  </Link>
+                );
+              })}
+            </div>
+
+            {/* Mobile menu button */}
+            <div className="md:hidden">
+              <button
+                onClick={() => setIsOpen(!isOpen)}
+                className="p-2 rounded-md text-neutral-400 hover:text-[#00FF41] focus:outline-none focus:ring-2 focus:ring-[#00FF41] transition-colors"
+                aria-label="Toggle menu"
+              >
+                {isOpen ? <X size={24} /> : <Menu size={24} />}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Mobile Navigation */}
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="md:hidden bg-[#0A0E11] border-t border-neutral-800"
+          >
+            <div className="px-4 py-2 space-y-1">
+              {navItems.map((item) => {
+                const IconComponent = item.icon;
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    onClick={() => setIsOpen(false)}
+                    className={`flex items-center justify-between px-3 py-3 rounded-md text-base font-medium transition-all duration-200 ${
+                      isActive(item.path)
+                        ? 'text-[#00FF41] bg-neutral-900 border-l-2 border-[#00FF41]'
+                        : 'text-neutral-400 hover:text-[#00FF41] hover:bg-neutral-900'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      {IconComponent && (
+                        <IconComponent 
+                          size={16} 
+                          className={`${
+                            isActive(item.path) ? 'text-[#00FF41]' : ''
+                          }`}
+                        />
+                      )}
+                      <span className="font-mono">$ {item.label.toLowerCase()}</span>
+                    </div>
+                    <ChevronRight
+                      size={16}
+                      className={`transition-transform ${
+                        isActive(item.path) ? 'text-[#00FF41]' : ''
+                      }`}
+                    />
+                  </Link>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+      </nav>
+    </>
+  );
+};
